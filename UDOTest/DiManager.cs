@@ -8,7 +8,7 @@ using Translator;
 
 namespace MoveOrdersCreation
 {
-    class DiManager
+    public class DiManager
     {
         public static Recordset Recordset => recSet.Value;
         public static Company Company => xCompany.Value;
@@ -47,10 +47,9 @@ namespace MoveOrdersCreation
         public bool CreateTable(string tableName, BoUTBTableType TableType)
         {
             GC.Collect();
-            UserTablesMD oUTables;
             try
             {
-                oUTables = (UserTablesMD)Company.GetBusinessObject(BoObjectTypes.oUserTables);
+                UserTablesMD oUTables = (UserTablesMD)Company.GetBusinessObject(BoObjectTypes.oUserTables);
 
                 if (oUTables.GetByKey(tableName) == false)
                 {
@@ -114,14 +113,14 @@ namespace MoveOrdersCreation
             }
             catch (Exception ex)
             {
-                var err = DiManager.Company.GetLastErrorDescription();
+                string err = DiManager.Company.GetLastErrorDescription();
                 SAPbouiCOM.Framework.Application.SBO_Application.MessageBox($"C# - {ex.Message}  SaP - {err}");
             }
         }
         public bool AddField(string tablename, string fieldname, string description, BoFieldTypes type, int size, bool isMandatory, bool isSapTable = false, string likedToTAble = "")
         {
             UserFieldsMD oUfield = (UserFieldsMD)Company.GetBusinessObject(BoObjectTypes.oUserFields);
-            var recordset = (Recordset)Company.GetBusinessObject(BoObjectTypes.BoRecordset);
+            Recordset recordset = (Recordset)Company.GetBusinessObject(BoObjectTypes.BoRecordset);
             recordset.DoQuery(QueryHanaTransalte($"SELECT * FROM CUFD WHERE AliasID = '{fieldname}' AND TableID = '@{tablename}'"));
             if (!recordset.EoF)
             {
@@ -161,7 +160,7 @@ namespace MoveOrdersCreation
                 int ret = oUfield.Add();
                 if (ret == 0 || ret == -2035)
                 {
-                    var x = Company.GetLastErrorDescription();
+                    string x = Company.GetLastErrorDescription();
                     System.Runtime.InteropServices.Marshal.ReleaseComObject(oUfield);
 
                     GC.Collect();
@@ -169,7 +168,7 @@ namespace MoveOrdersCreation
                 }
                 else
                 {
-                    var x = Company.GetLastErrorDescription();
+                    string x = Company.GetLastErrorDescription();
                     System.Runtime.InteropServices.Marshal.ReleaseComObject(oUfield);
 
                     GC.Collect();
@@ -195,7 +194,6 @@ namespace MoveOrdersCreation
 
         public bool AddKey(string tablename, string keyname, string fieldAlias, BoYesNoEnum IsUnique, string secondKeyAlias = "", string thirdKeyAlias = "")
         {
-            int result;
             UserKeysMD oUkey = (UserKeysMD)Company.GetBusinessObject(BoObjectTypes.oUserKeys);
             try
             {
@@ -214,7 +212,7 @@ namespace MoveOrdersCreation
                     oUkey.Elements.Add();
                     oUkey.Elements.ColumnAlias = thirdKeyAlias;
                 }
-                result = oUkey.Add();
+                int result = oUkey.Add();
 
                 if (result == 0)
                 {

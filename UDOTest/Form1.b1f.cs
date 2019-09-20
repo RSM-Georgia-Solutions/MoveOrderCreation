@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
-using System.Xml;
+﻿using System.Collections.Generic;
 using SAPbobsCOM;
 using SAPbouiCOM.Framework;
 using System.Linq;
-using System.Runtime.InteropServices;
 using MoveOrdersCreation.Models;
 
 namespace MoveOrdersCreation
 {
     [FormAttribute("MoveOrdersCreation.Form1", "CreateMoveOrders.b1f")]
-    class CreateMoveOrders : UserFormBase
+    sealed class CreateMoveOrders : UserFormBase
     {
         public CreateMoveOrders()
         {
@@ -40,10 +35,10 @@ namespace MoveOrdersCreation
 
         private void OnCustomInitialize()
         {
-            Grid0.DataTable.ExecuteQuery(DiManager.QueryHanaTransalte(query));
+            Grid0.DataTable.ExecuteQuery(DiManager.QueryHanaTransalte(_query));
         }
 
-        private string query = $@"SELECT    
+        private readonly string _query = $@"SELECT    
    DLN1.CodeBars, 
    RDN1.LineNum,
    PMX_PLPL.ItemTransactionalInfoKey,
@@ -99,13 +94,13 @@ namespace MoveOrdersCreation
             //ItemCode
             //BachId
             //SSCC
-            //PICKED FROM 
+            //PICKED FROM
 
             List<MoveOrder> moveOrders = new List<MoveOrder>();
             List<MoveOrderRow> moveOrderRows = new List<MoveOrderRow>();
 
 
-            recSetGetReturns.DoQuery(DiManager.QueryHanaTransalte(query));
+            recSetGetReturns.DoQuery(DiManager.QueryHanaTransalte(_query));
 
             while (!recSetGetReturns.EoF)
             {
@@ -113,24 +108,12 @@ namespace MoveOrdersCreation
                 var itemCode = recSetGetReturns.Fields.Item("ItemCode").Value.ToString();
                 var binTo = recSetGetReturns.Fields.Item("StorLocCode").Value.ToString();
                 var plplLuId = recSetGetReturns.Fields.Item("LogUnitIdentKey").Value.ToString();
-
-                int destLogUnitIdentKey;
                 recSetGetMoveOrderRowsLuId.DoQuery(DiManager.QueryHanaTransalte($"select * from PMX_INVD where StorLocCode = '{binTo}' AND LogUnitIdentKey = '{plplLuId}'"));
-                if (recSetGetMoveOrderRowsLuId.EoF)
-                {
-                    destLogUnitIdentKey = int.Parse(recSetGetReturns.Fields.Item("U_PMX_LUID").Value.ToString() == string.Empty ? "0" : recSetGetReturns.Fields.Item("U_PMX_LUID").Value.ToString());
-                }
-                else
-                {
-                    destLogUnitIdentKey = int.Parse(plplLuId);
-                }
-
+                int destLogUnitIdentKey = recSetGetMoveOrderRowsLuId.EoF ? int.Parse(recSetGetReturns.Fields.Item("U_PMX_LUID").Value.ToString() == string.Empty ? "0" : recSetGetReturns.Fields.Item("U_PMX_LUID").Value.ToString()) : int.Parse(plplLuId);
                 var docFrom = recSetGetReturns.Fields.Item("U_PMX_LOCO").Value.ToString();
                 var wareHouse = recSetGetReturns.Fields.Item("PMX WhsCode").Value.ToString();
-
                 var lineNum = int.Parse(recSetGetReturns.Fields.Item("LineNum").Value.ToString());
                 var baseEntry = int.Parse(recSetGetReturns.Fields.Item("Return DocEntry").Value.ToString());
-
                 var dscription = recSetGetReturns.Fields.Item("Dscription").Value.ToString();
                 var openQty = decimal.Parse(recSetGetReturns.Fields.Item("OpenQty").Value.ToString());
                 var quantity = decimal.Parse(recSetGetReturns.Fields.Item("Quantity").Value.ToString());
@@ -139,21 +122,14 @@ namespace MoveOrdersCreation
                 var srcStorLocCode = docFrom;
                 var srcLogUnitIdentKey = int.Parse(recSetGetReturns.Fields.Item("U_PMX_LUID").Value.ToString() == string.Empty ? "0" : recSetGetReturns.Fields.Item("U_PMX_LUID").Value.ToString());
                 var destStorLocCode = binTo;
-
-                var itemTransactionalInfoKey = int.Parse(recSetGetReturns.Fields.Item("ItemTransactionalInfoKey").Value.ToString());
-
-
+                var itemTransactionalInfoKey = int.Parse(recSetGetReturns.Fields.Item("ItemTransactionalInfoKey").Value
+                    .ToString());
                 MoveOrder moveOrder = new MoveOrder
                 {
                     ToPmxWhsCode = wareHouse,
                     FromPmxWhsCode = wareHouse
                 };
-
                 moveOrders.Add(moveOrder);
-
-                int internalKey = int.Parse(recSetGetMoveOrderRows.Fields.Item("InternalKey").Value.ToString()) + 1;
-
-
                 MoveOrderRow row = new MoveOrderRow
                 {
                     BaseEntry = baseEntry,
@@ -195,8 +171,7 @@ namespace MoveOrdersCreation
                 order.Rows = new List<MoveOrderRow>();
                 order.Rows = rows;
 
-
-                moveOrdersPost.Add(order); 
+                moveOrdersPost.Add(order);
             }
 
 
