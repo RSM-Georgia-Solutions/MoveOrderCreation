@@ -62,18 +62,19 @@ namespace MoveOrdersCreation.Models
             Recordset recSet = (Recordset)DiManager.Company.GetBusinessObject(BoObjectTypes.BoRecordset);
             Recordset recSetRow = (Recordset)DiManager.Company.GetBusinessObject(BoObjectTypes.BoRecordset);
 
-            recSet.DoQuery(DiManager.QueryHanaTransalte($"SELECT TOP(1) DocEntry FROM PMX_MOHE ORDER By DocEntry Desc"));
-            int docentry = int.Parse(recSet.Fields.Item("DocEntry").Value.ToString()) + 1;
-            DocEntry = docentry;
+            //recSet.DoQuery(DiManager.QueryHanaTransalte($"SELECT TOP(1) DocEntry FROM PMX_MOHE ORDER By DocEntry Desc"));
+            //int docentry = int.Parse(recSet.Fields.Item("DocEntry").Value.ToString()) + 1;
+            //DocEntry = docentry;
+            string docentry = "SELECT \"PMX_MOHE_S\".nextval";
 
-            string queryHeder = $@"INSERT INTO PMX_MOHE (DocEntry,UserSign, Canceled, CreateDate, CreateTime, UpdateDate, UpdateTime, Version, CreatedBy,  ObjType, Priority, DocStatus, MoveOrderType, MoveOrderStatus, DueDate, LockedBy, MoveLogUnitIn1Time, FromPmxWhsCode, ToPmxWhsCode, Remarks) 
-                                            VALUES ({docentry}, {UserSign}, '{Canceled}', '{CreateDate.ToString("s")}', {CreateTime}, '{UpdateDate.ToString("s")}', {UpdateTime}, {Version}, {CreatedBy}, '{ObjType}', {Priority}, '{DocStatus}', '{MoveOrderType}', '{MoveOrderStatus}', '{DueDate.ToString("s")}', '{LockedBy ?? 9999999}', '{MoveLogUnitIn1Time}', '{FromPmxWhsCode}', '{ToPmxWhsCode}', '{Remarks}')";
+            string queryHeder = $"INSERT INTO \"PMX_MOHE\" ( \"DocEntry\", \"MoveOrderStatus\", \"DueDate\", \"LockedBy\",  \"Priority\", \"MoveOrderType\", \"MoveLogUnitIn1Time\", \"FromPmxWhsCode\", \"ToPmxWhsCode\",    \"Remarks\", \"DocStatus\", \"Canceled\", \"ObjType\", \"UserSign\", \"CreatedBy\", \"Version\",    \"CreateDate\", \"CreateTime\", \"UpdateDate\", \"UpdateTime\" )   SELECT \"PMX_MOHE_S\".nextval, '{MoveOrderStatus}', '{DueDate.ToString("s")}', '{LockedBy ?? 9999999}', {Priority}, '{MoveOrderType}', '{MoveLogUnitIn1Time}', '{FromPmxWhsCode}', '{ToPmxWhsCode}', '{Remarks}', '{DocStatus}', '{Canceled}', '{ObjType}', '{UserSign}', '{CreatedBy}', '{Version}', '{CreateDate.ToString("s")}', '{CreateTime}', '{UpdateDate.ToString("s")}', '{UpdateTime}' FROM dummy";
 
-            queryHeder = queryHeder.Replace("'9999999'", "null");
+            queryHeder = queryHeder.Replace("'9999999'", "null");           
+
 
             try
             {
-                recSet.DoQuery(DiManager.QueryHanaTransalte(queryHeder));
+                recSet.DoQuery(queryHeder);
             }
             catch (Exception e)
             {
