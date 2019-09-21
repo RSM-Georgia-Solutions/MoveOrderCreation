@@ -76,7 +76,8 @@ namespace MoveOrdersCreation
   
   WHERE  ORDN.CANCELED = 'N' AND ODLN.CANCELED = 'N' AND RDN1.BaseType = '15' AND DLN1.BaseType = '17'
   AND PMX_PLPL.BaseType = '17'
-  AND (PMX_MOLI.BaseType != '16' OR PMX_MOLI.BaseType is null)";
+  AND (PMX_MOLI.BaseType != '16' OR PMX_MOLI.BaseType is null)
+  AND TO_CHAR(RDN1.U_PMX_LOCO) = 'R03'";
 
 
 

@@ -61,11 +61,8 @@ namespace MoveOrdersCreation.Models
         {
             Recordset recSet = (Recordset)DiManager.Company.GetBusinessObject(BoObjectTypes.BoRecordset);
             Recordset recSetRow = (Recordset)DiManager.Company.GetBusinessObject(BoObjectTypes.BoRecordset);
-
-            //recSet.DoQuery(DiManager.QueryHanaTransalte($"SELECT TOP(1) DocEntry FROM PMX_MOHE ORDER By DocEntry Desc"));
-            //int docentry = int.Parse(recSet.Fields.Item("DocEntry").Value.ToString()) + 1;
-            //DocEntry = docentry;
-            string docentry = "SELECT \"PMX_MOHE_S\".nextval";
+     
+           
 
             string queryHeder = $"INSERT INTO \"PMX_MOHE\" ( \"DocEntry\", \"MoveOrderStatus\", \"DueDate\", \"LockedBy\",  \"Priority\", \"MoveOrderType\", \"MoveLogUnitIn1Time\", \"FromPmxWhsCode\", \"ToPmxWhsCode\",    \"Remarks\", \"DocStatus\", \"Canceled\", \"ObjType\", \"UserSign\", \"CreatedBy\", \"Version\",    \"CreateDate\", \"CreateTime\", \"UpdateDate\", \"UpdateTime\" )   SELECT \"PMX_MOHE_S\".nextval, '{MoveOrderStatus}', '{DueDate.ToString("s")}', '{LockedBy ?? 9999999}', {Priority}, '{MoveOrderType}', '{MoveLogUnitIn1Time}', '{FromPmxWhsCode}', '{ToPmxWhsCode}', '{Remarks}', '{DocStatus}', '{Canceled}', '{ObjType}', '{UserSign}', '{CreatedBy}', '{Version}', '{CreateDate.ToString("s")}', '{CreateTime}', '{UpdateDate.ToString("s")}', '{UpdateTime}' FROM dummy";
 
@@ -81,19 +78,23 @@ namespace MoveOrdersCreation.Models
                 return e.Message;
             }
 
+            recSet.DoQuery(DiManager.QueryHanaTransalte($"SELECT TOP(1) DocEntry FROM PMX_MOHE ORDER By DocEntry Desc"));
+            int docentry = int.Parse(recSet.Fields.Item("DocEntry").Value.ToString());
+            DocEntry = docentry;
 
             foreach (var row in Rows)
-            {
-                recSetRow.DoQuery(DiManager.QueryHanaTransalte($"SELECT TOP(1) InternalKey FROM PMX_MOLI ORDER By InternalKey Desc"));
-                var internalKey = int.Parse(recSetRow.Fields.Item("InternalKey").Value.ToString()) + 1;
-                string queryRow = $@"INSERT INTO PMX_MOLI (InternalKey, DocEntry, LineNum, BaseType, BaseEntry, BaseLine, LineStatus, ItemCode, Dscription, OpenQty, Quantity, Uom, QuantityPerUom, Version, MoveOrderLineStatus, SrcStorLocCode, SrcLogUnitIdentKey, DestStorLocCode, DestLogUnitIdentKey, QualityStatusCode, QuantityUom2, Uom2, OpenQtyUom2, ItemTransactionalInfoKey, StockLevel, WABoxCode, Division, SrcMasterLogUnitIdentKey) 
-              VALUES({internalKey}, {docentry}, {row.LineNum}, '{row.BaseType}', {row.BaseEntry}, {row.BaseLine}, '{row.LineStatus}', '{row.ItemCode}', '{row.Dscription}', {row.OpenQty}, 
-                      {row.Quantity}, '{row.Uom}', {row.QuantityPerUom}, {row.Version}, '{row.MoveOrderLineStatus}', '{row.SrcStorLocCode}', {row.SrcLogUnitIdentKey}, '{row.DestStorLocCode}', 
-                      {row.DestLogUnitIdentKey}, '{row.QualityStatusCode}', {row.QuantityUom2}, '{row.Uom2}', {row.OpenQtyUom2}, {row.ItemTransactionalInfoKey}, '{row.StockLevel}', '{row.WABoxCode}', {row.Division}, {row.SrcMasterLogUnitIdentKey}) ";
+            { 
+
+                string queryRow = $"INSERT INTO \"PMX_MOLI\"(\"InternalKey\", \"MoveOrderLineStatus\", \"SrcLogUnitIdentKey\", \"SrcMasterLogUnitIdentKey\", \"DestLogUnitIdentKey\", \"SrcStorLocCode\", \"QualityStatusCode\", \"DestStorLocCode\", \"OpenQty\", \"OpenQtyUom2\", \"Dscription\", \"ItemTransactionalInfoKey\", \"StockLevel\", \"WABoxCode\", \"DocEntry\", \"LineNum\", \"LineStatus\", \"BaseType\", \"BaseEntry\", \"BaseLine\", \"ItemCode\", \"Quantity\", \"Version\", \"Uom\", \"QuantityPerUom\", \"Uom2\", \"QuantityUom2\") SELECT \"PMX_MOLI_S\".nextval, '{row.MoveOrderLineStatus}', {row.SrcLogUnitIdentKey},{row.SrcMasterLogUnitIdentKey},{row.DestLogUnitIdentKey},'{row.SrcStorLocCode}','{row.QualityStatusCode}','{row.DestStorLocCode}',{row.OpenQty},{row.OpenQtyUom2},'{row.Dscription}',{row.ItemTransactionalInfoKey},'{row.StockLevel}','{row.WABoxCode}',{docentry},{row.LineNum},'{row.LineStatus}','{row.BaseType}',{row.BaseEntry},{row.BaseLine},'{row.ItemCode}',{row.Quantity},{row.Version},'{row.Uom}',{row.QuantityPerUom},'{row.Uom2}',{row.QuantityUom2} FROM dummy";
+
+              //  string queryRow = $@"INSERT INTO PMX_MOLI (InternalKey, DocEntry, LineNum, BaseType, BaseEntry, BaseLine, LineStatus, ItemCode, Dscription, OpenQty, Quantity, Uom, QuantityPerUom, Version, MoveOrderLineStatus, SrcStorLocCode, SrcLogUnitIdentKey, DestStorLocCode, DestLogUnitIdentKey, QualityStatusCode, QuantityUom2, Uom2, OpenQtyUom2, ItemTransactionalInfoKey, StockLevel, WABoxCode, Division, SrcMasterLogUnitIdentKey) 
+              //VALUES({internalKey}, {docentry}, {row.LineNum}, '{row.BaseType}', {row.BaseEntry}, {row.BaseLine}, '{row.LineStatus}', '{row.ItemCode}', '{row.Dscription}', {row.OpenQty}, 
+              //        {row.Quantity}, '{row.Uom}', {row.QuantityPerUom}, {row.Version}, '{row.MoveOrderLineStatus}', '{row.SrcStorLocCode}', {row.SrcLogUnitIdentKey}, '{row.DestStorLocCode}', 
+              //        {row.DestLogUnitIdentKey}, '{row.QualityStatusCode}', {row.QuantityUom2}, '{row.Uom2}', {row.OpenQtyUom2}, {row.ItemTransactionalInfoKey}, '{row.StockLevel}', '{row.WABoxCode}', {row.Division}, {row.SrcMasterLogUnitIdentKey}) ";
 
                 try
                 {
-                    recSet.DoQuery(DiManager.QueryHanaTransalte(queryRow));
+                    recSet.DoQuery(queryRow);
                 }
                 catch (Exception ex)
                 {
