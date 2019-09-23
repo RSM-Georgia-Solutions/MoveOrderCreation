@@ -3,6 +3,9 @@ using SAPbobsCOM;
 using SAPbouiCOM.Framework;
 using System.Linq;
 using MoveOrdersCreation.Models;
+using System.Xml.Linq;
+using System.IO;
+using System.Reflection;
 
 namespace MoveOrdersCreation
 {
@@ -35,55 +38,17 @@ namespace MoveOrdersCreation
 
         private void OnCustomInitialize()
         {
+            string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\Queries.sql");
+            _query = File.ReadAllText(path);
             Grid0.DataTable.ExecuteQuery(DiManager.QueryHanaTransalte(_query));
         }
 
-        private readonly string _query = $@"SELECT    
-   DLN1.CodeBars, 
-   RDN1.LineNum,
-   PMX_PLPL.ItemTransactionalInfoKey,
-   PMX_MOLI.BaseType, 
-   RDN1.Dscription,
-   PMX_PLPL.LogUnitIdentKey,
-   RDN1.OpenQty,
-   ORDN.DocNum,
-   ORDN.DocEntry as 'Return DocEntry',
-   RDN1.DocEntry,
-   ODLN.DocEntry as 'Delivery DocEntry',
-   ODLN.DocNum as 'Delivery DocNum',
-   PMX_PLHE.DestStorLocCode,   
-   RDN1.ItemCode, 
-   PMX_PLLI.StorLocCode, 
-   RDN1.Quantity,      
-   RDN1.UomCode,      
-   RDN1.NumPerMsr,
-   RDN1.U_PMX_QUAN,      
-   RDN1.U_PMX_LOCO, 
-   RDN1.U_PMX_LUID,
-   RDN1.U_PMX_SSCC,
-   PMX_OSWH.Code as 'PMX WhsCode',
-   DLN1.unitMsr,
-   DLN1.NumPerMsr
- from ORDN
-  left join RDN1 on ORDN.DocEntry = RDN1.DocEntry  
-  left join DLN1 on RDN1.BaseEntry = DLN1.DocEntry AND RDN1.LineNum = DLN1.LineNum
-  left join ODLN on ODLN.DocEntry = DLN1.DocEntry
-  left join PMX_PLPL on DLN1.BaseEntry = PMX_PLPL.BaseEntry AND DLN1.LineNum = PMX_PLPL.LineNum
-  left join PMX_PLLI on PMX_PLPL.DocEntry = PMX_PLLI.BaseEntry AND PMX_PLPL.LineNum = PMX_PLLI.LineNum
-  left Join PMX_PLHE on PMX_PLLI.DocEntry = PMX_PLHE.DocEntry
-  left Join PMX_MOLI on PMX_MOLI.BaseEntry = ORDN.DocEntry
-  left join PMX_OSWH on PMX_OSWH.SboWhsCode = RDN1.WhsCode
-  
-  WHERE  ORDN.CANCELED = 'N' AND ODLN.CANCELED = 'N' AND RDN1.BaseType = '15' AND DLN1.BaseType = '17'
-  AND PMX_PLPL.BaseType = '17'
-  AND (PMX_MOLI.BaseType != '16' OR PMX_MOLI.BaseType is null)
-  AND TO_CHAR(RDN1.U_PMX_LOCO) = 'R03'";
+
+       
+      
 
 
-
-
-
-
+        private  string _query ;
         private SAPbouiCOM.Button Button1;
 
         private void Button1_PressedAfter(object sboObject, SAPbouiCOM.SBOItemEventArg pVal)
@@ -110,7 +75,7 @@ namespace MoveOrdersCreation
                 var binTo = recSetGetReturns.Fields.Item("StorLocCode").Value.ToString();
                 var plplLuId = recSetGetReturns.Fields.Item("LogUnitIdentKey").Value.ToString();
                 recSetGetMoveOrderRowsLuId.DoQuery(DiManager.QueryHanaTransalte($"select * from PMX_INVD where StorLocCode = '{binTo}' AND LogUnitIdentKey = '{plplLuId}'"));
-                int destLogUnitIdentKey = recSetGetMoveOrderRowsLuId.EoF ? int.Parse(recSetGetReturns.Fields.Item("U_PMX_LUID").Value.ToString() == string.Empty ? "0" : recSetGetReturns.Fields.Item("U_PMX_LUID").Value.ToString()) : int.Parse(plplLuId);
+                int destLogUnitIdentKey = int.Parse(recSetGetReturns.Fields.Item("LogUnitIdentKey").Value.ToString());
                 var docFrom = recSetGetReturns.Fields.Item("U_PMX_LOCO").Value.ToString();
                 var wareHouse = recSetGetReturns.Fields.Item("PMX WhsCode").Value.ToString();
                 var lineNum = int.Parse(recSetGetReturns.Fields.Item("LineNum").Value.ToString());
