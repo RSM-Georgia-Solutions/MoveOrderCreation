@@ -83,14 +83,14 @@ namespace MoveOrdersCreation.Models
             DocEntry = docentry;
 
             foreach (var row in Rows)
-            { 
+            {
+                var src = row.SrcLogUnitIdentKey == 0? -99 : row.SrcLogUnitIdentKey;
+                var src1 = row.SrcMasterLogUnitIdentKey == 0? -88 : row.SrcMasterLogUnitIdentKey;
 
-                string queryRow = $"INSERT INTO \"PMX_MOLI\"(\"InternalKey\", \"MoveOrderLineStatus\", \"SrcLogUnitIdentKey\", \"SrcMasterLogUnitIdentKey\", \"DestLogUnitIdentKey\", \"SrcStorLocCode\", \"QualityStatusCode\", \"DestStorLocCode\", \"OpenQty\", \"OpenQtyUom2\", \"Dscription\", \"ItemTransactionalInfoKey\", \"StockLevel\", \"WABoxCode\", \"DocEntry\", \"LineNum\", \"LineStatus\", \"BaseType\", \"BaseEntry\", \"BaseLine\", \"ItemCode\", \"Quantity\", \"Version\", \"Uom\", \"QuantityPerUom\", \"Uom2\", \"QuantityUom2\") SELECT \"PMX_MOLI_S\".nextval, '{row.MoveOrderLineStatus}', {row.SrcLogUnitIdentKey},{row.SrcMasterLogUnitIdentKey},{row.DestLogUnitIdentKey},'{row.SrcStorLocCode}','{row.QualityStatusCode}','{row.DestStorLocCode}',{row.OpenQty},{row.OpenQtyUom2},'{row.Dscription}',{row.ItemTransactionalInfoKey},'{row.StockLevel}','{row.WABoxCode}',{docentry},{row.LineNum},'{row.LineStatus}','{row.BaseType}',{row.BaseEntry},{row.BaseLine},'{row.ItemCode}',{row.Quantity},{row.Version},'{row.Uom}',{row.QuantityPerUom},'{row.Uom2}',{row.QuantityUom2} FROM dummy";
+                string queryRow = $"INSERT INTO \"PMX_MOLI\"(\"InternalKey\", \"MoveOrderLineStatus\", \"SrcLogUnitIdentKey\", \"SrcMasterLogUnitIdentKey\", \"DestLogUnitIdentKey\", \"SrcStorLocCode\", \"QualityStatusCode\", \"DestStorLocCode\", \"OpenQty\", \"OpenQtyUom2\", \"Dscription\", \"ItemTransactionalInfoKey\", \"StockLevel\", \"WABoxCode\", \"DocEntry\", \"LineNum\", \"LineStatus\", \"BaseType\", \"BaseEntry\", \"BaseLine\", \"ItemCode\", \"Quantity\", \"Version\", \"Uom\", \"QuantityPerUom\", \"Uom2\", \"QuantityUom2\") SELECT \"PMX_MOLI_S\".nextval, '{row.MoveOrderLineStatus}', {src},{src1},{row.DestLogUnitIdentKey},'{row.SrcStorLocCode}','{row.QualityStatusCode}','{row.DestStorLocCode}',{row.OpenQty},{row.OpenQtyUom2},'{row.Dscription}',{row.ItemTransactionalInfoKey},'{row.StockLevel}','{row.WABoxCode}',{docentry},{row.LineNum},'{row.LineStatus}','{row.BaseType}',{row.BaseEntry},{row.BaseLine},'{row.ItemCode}',{row.Quantity},{row.Version},'{row.Uom}',{row.QuantityPerUom},'{row.Uom2}',{row.QuantityUom2} FROM dummy";
 
-              //  string queryRow = $@"INSERT INTO PMX_MOLI (InternalKey, DocEntry, LineNum, BaseType, BaseEntry, BaseLine, LineStatus, ItemCode, Dscription, OpenQty, Quantity, Uom, QuantityPerUom, Version, MoveOrderLineStatus, SrcStorLocCode, SrcLogUnitIdentKey, DestStorLocCode, DestLogUnitIdentKey, QualityStatusCode, QuantityUom2, Uom2, OpenQtyUom2, ItemTransactionalInfoKey, StockLevel, WABoxCode, Division, SrcMasterLogUnitIdentKey) 
-              //VALUES({internalKey}, {docentry}, {row.LineNum}, '{row.BaseType}', {row.BaseEntry}, {row.BaseLine}, '{row.LineStatus}', '{row.ItemCode}', '{row.Dscription}', {row.OpenQty}, 
-              //        {row.Quantity}, '{row.Uom}', {row.QuantityPerUom}, {row.Version}, '{row.MoveOrderLineStatus}', '{row.SrcStorLocCode}', {row.SrcLogUnitIdentKey}, '{row.DestStorLocCode}', 
-              //        {row.DestLogUnitIdentKey}, '{row.QualityStatusCode}', {row.QuantityUom2}, '{row.Uom2}', {row.OpenQtyUom2}, {row.ItemTransactionalInfoKey}, '{row.StockLevel}', '{row.WABoxCode}', {row.Division}, {row.SrcMasterLogUnitIdentKey}) ";
+                queryRow = queryRow.Replace("-99", "NULL");
+                queryRow = queryRow.Replace("-88", "NULL");
 
                 try
                 {

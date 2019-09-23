@@ -40,12 +40,16 @@ namespace MoveOrdersCreation
         {
             string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\Queries.sql");
             _query = File.ReadAllText(path);
+            Refresh();
+        }
+
+        private void Refresh()
+        {
             Grid0.DataTable.ExecuteQuery(DiManager.QueryHanaTransalte(_query));
         }
 
 
-       
-      
+
 
 
         private  string _query ;
@@ -53,35 +57,22 @@ namespace MoveOrdersCreation
 
         private void Button1_PressedAfter(object sboObject, SAPbouiCOM.SBOItemEventArg pVal)
         {
-            Recordset recSetGetReturns = (Recordset)DiManager.Company.GetBusinessObject(BoObjectTypes.BoRecordset);
-            Recordset recSetGetMoveOrderRows = (Recordset)DiManager.Company.GetBusinessObject(BoObjectTypes.BoRecordset);
-            Recordset recSetGetMoveOrderRowsLuId = (Recordset)DiManager.Company.GetBusinessObject(BoObjectTypes.BoRecordset);
-
-            //ItemCode
-            //BachId
-            //SSCC
-            //PICKED FROM
-
+            Recordset recSetGetReturns = (Recordset)DiManager.Company.GetBusinessObject(BoObjectTypes.BoRecordset);   
             List<MoveOrder> moveOrders = new List<MoveOrder>();
             List<MoveOrderRow> moveOrderRows = new List<MoveOrderRow>();
-
 
             recSetGetReturns.DoQuery(DiManager.QueryHanaTransalte(_query));
 
             while (!recSetGetReturns.EoF)
-            {
-                recSetGetMoveOrderRows.DoQuery(DiManager.QueryHanaTransalte($@"SELECT * FROM PMX_MOLI"));
+            {                
                 var itemCode = recSetGetReturns.Fields.Item("ItemCode").Value.ToString();
-                var binTo = recSetGetReturns.Fields.Item("StorLocCode").Value.ToString();
-                var plplLuId = recSetGetReturns.Fields.Item("LogUnitIdentKey").Value.ToString();
-                recSetGetMoveOrderRowsLuId.DoQuery(DiManager.QueryHanaTransalte($"select * from PMX_INVD where StorLocCode = '{binTo}' AND LogUnitIdentKey = '{plplLuId}'"));
+                var binTo = recSetGetReturns.Fields.Item("StorLocCode").Value.ToString();                               
                 int destLogUnitIdentKey = int.Parse(recSetGetReturns.Fields.Item("LogUnitIdentKey").Value.ToString());
                 var docFrom = recSetGetReturns.Fields.Item("U_PMX_LOCO").Value.ToString();
                 var wareHouse = recSetGetReturns.Fields.Item("PMX WhsCode").Value.ToString();
                 var lineNum = int.Parse(recSetGetReturns.Fields.Item("LineNum").Value.ToString());
                 var baseEntry = int.Parse(recSetGetReturns.Fields.Item("Return DocEntry").Value.ToString());
-                var dscription = recSetGetReturns.Fields.Item("Dscription").Value.ToString();
-                var openQty = decimal.Parse(recSetGetReturns.Fields.Item("OpenQty").Value.ToString());
+                var dscription = recSetGetReturns.Fields.Item("Dscription").Value.ToString();                 
                 var quantity = decimal.Parse(recSetGetReturns.Fields.Item("Quantity").Value.ToString());
                 var uom = recSetGetReturns.Fields.Item("UomCode").Value.ToString();
                 var quantityPerUom = decimal.Parse(recSetGetReturns.Fields.Item("NumPerMsr").Value.ToString());
@@ -145,7 +136,7 @@ namespace MoveOrdersCreation
             {
                 item.Add();
             }
-
+            Refresh();
         }
 
         private SAPbouiCOM.Grid Grid0;
