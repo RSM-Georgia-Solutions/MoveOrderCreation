@@ -37,7 +37,7 @@
               LEFT OUTER JOIN PMX_OSWH ON PMX_OSWH."SboWhsCode" = RDN1."WhsCode"   
               LEFT OUTER JOIN PMX_INVT ON PMX_INVT."ItemCode" = RDN1."ItemCode" AND PMX_INVT."StorLocCode" = PMX_PLLI."StorLocCode"              
               WHERE ORDN.CANCELED = 'N' AND ODLN.CANCELED = 'N' AND RDN1."BaseType" = '15' AND DLN1."BaseType" = '17' AND PMX_PLPL."BaseType" = '17'     
-              AND  ORDN."DocEntry" not in (SELECT "BaseEntry" FROM PMX_MOLI where PMX_MOLI."BaseEntry" in (SELECT "DocEntry" FROM RDN1) AND "BaseType" = 16)        
-  			  AND TO_CHAR(RDN1.U_PMX_LOCO) = 'RB28'	
+              AND  ORDN."DocEntry" not in (select "BaseEntry" from PMX_MOLI where PMX_MOLI."BaseType" = 16)        
+  			  AND TO_CHAR(RDN1.U_PMX_LOCO) = 'RB21'	
   				  
   				
