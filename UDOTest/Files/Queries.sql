@@ -1,8 +1,8 @@
-﻿SELECT 
+﻿SELECT  
  PMX_PLPL."DocEntry" as "Pick Proposal List DocEntry",
  PMX_PLHE."DocEntry" as "Pick List DocEntry",
  RDN1."U_PMX_LUID", -- სადაც დადო Return -მა 
- PMX_INVT."LogUnitIdentKey", 
+ PMX_INVT."LogUnitIdentKey", -- LUID სადაც დადო Return -მა 
  PMX_PLLI."LogUnitIdentKey", -- LUID საიდანაც აიღო Pick List -მა
  RDN1."U_PMX_LOCO", -- Storage location code სადაც დადო Return -მა
  RDN1."U_PMX_SLOC", --  Storage location code საიდანაც აიღო (Source)
@@ -10,8 +10,7 @@
  PMX_PLPL."ItemTransactionalInfoKey", 
  DLN1."CodeBars",
  RDN1."U_PMX_SSCC", 
- RDN1."LineNum", 
- PMX_MOLI."BaseType",
+ RDN1."LineNum",  
  RDN1."Dscription", 
  RDN1."OpenQty",
  ORDN."DocNum",
@@ -34,9 +33,11 @@
               LEFT OUTER JOIN ODLN ON ODLN."DocEntry" = DLN1."DocEntry" 
               LEFT OUTER JOIN PMX_PLPL ON DLN1."BaseEntry" = PMX_PLPL."BaseEntry" AND DLN1."LineNum" = PMX_PLPL."LineNum" 
               LEFT OUTER JOIN PMX_PLLI ON PMX_PLPL."DocEntry" = PMX_PLLI."BaseEntry" AND PMX_PLPL."LineNum" = PMX_PLLI."LineNum" 
-              LEFT OUTER JOIN PMX_PLHE ON PMX_PLLI."DocEntry" = PMX_PLHE."DocEntry" LEFT OUTER JOIN PMX_MOLI ON PMX_MOLI."BaseEntry" = ORDN."DocEntry" 
-              LEFT OUTER JOIN PMX_OSWH ON PMX_OSWH."SboWhsCode" = RDN1."WhsCode" 
-              LEFT OUTER JOIN PMX_INVT ON PMX_INVT."ItemCode" = RDN1."ItemCode" AND PMX_INVT."StorLocCode" = PMX_PLLI."StorLocCode"
-              WHERE ORDN.CANCELED = 'N' AND ODLN.CANCELED = 'N' AND RDN1."BaseType" = '15' AND DLN1."BaseType" = '17' AND PMX_PLPL."BaseType" = '17' AND
-               (PMX_MOLI."BaseType" <> '16' OR PMX_MOLI."BaseType" IS NULL)
-  				AND TO_CHAR(RDN1.U_PMX_LOCO) = 'R03'
+              LEFT OUTER JOIN PMX_PLHE ON PMX_PLLI."DocEntry" = PMX_PLHE."DocEntry"        
+              LEFT OUTER JOIN PMX_OSWH ON PMX_OSWH."SboWhsCode" = RDN1."WhsCode"   
+              LEFT OUTER JOIN PMX_INVT ON PMX_INVT."ItemCode" = RDN1."ItemCode" AND PMX_INVT."StorLocCode" = PMX_PLLI."StorLocCode"              
+              WHERE ORDN.CANCELED = 'N' AND ODLN.CANCELED = 'N' AND RDN1."BaseType" = '15' AND DLN1."BaseType" = '17' AND PMX_PLPL."BaseType" = '17'     
+              AND  ORDN."DocEntry" not in (SELECT "BaseEntry" FROM PMX_MOLI where PMX_MOLI."BaseEntry" in (SELECT "DocEntry" FROM RDN1) AND "BaseType" = 16)        
+  			  AND TO_CHAR(RDN1.U_PMX_LOCO) = 'RB28'	
+  				  
+  				
