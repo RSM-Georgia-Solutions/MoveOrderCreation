@@ -70,11 +70,17 @@ namespace MoveOrdersCreation
             while (!recSetGetReturns.EoF)
             {
                 var itemCode = recSetGetReturns.Fields.Item("ItemCode").Value.ToString();
-                var batch = int.Parse(recSetGetReturns.Fields.Item("U_PMX_BATC").Value.ToString());
+                var batch = recSetGetReturns.Fields.Item("U_PMX_BATC").Value.ToString();
                 _queryMin = _queryMin.Replace("$itemCode", $"{itemCode}");
                 _queryMin = _queryMin.Replace("$BatchNumber", $"{batch}");
                 recSet2.DoQuery(_queryMin);
                 var destiantionLocation = recSet2.Fields.Item("StorLocCode").Value.ToString();
+                if (destiantionLocation == string.Empty)
+                {
+                    SAPbouiCOM.Framework.Application.SBO_Application.MessageBox($"Item : {itemCode} Not Found in Warehouse");
+                    recSetGetReturns.MoveNext();
+                    continue;
+                }
                 var SSCC = recSet2.Fields.Item("SSCC").Value.ToString();
                 recSet2.DoQuery($"select \"InternalKey\" from PMX_LUID where \"SSCC\" = '{SSCC}'");
                 var destLogUnitIdentKey = int.Parse(recSet2.Fields.Item("InternalKey").Value.ToString());

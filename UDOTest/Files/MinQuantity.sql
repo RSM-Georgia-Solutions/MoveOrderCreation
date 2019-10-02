@@ -5,12 +5,12 @@
  in ( 
  SELECT distinct "PMX_INVT"."StorLocCode" FROM "PMX_INVT" 
  INNER JOIN PMX_ITRI on "PMX_INVT"."ItemCode" = "PMX_ITRI"."ItemCode"
- WHERE PMX_INVT."ItemCode" = 'I0387'
+ WHERE PMX_INVT."ItemCode" = '$itemCode'
  		AND "BestBeforeDate" IN 
  		(
 			SELECT distinct "BestBeforeDate" FROM "PMX_INVT" 
  			INNER JOIN PMX_ITRI on "PMX_INVT"."ItemCode" = "PMX_ITRI"."ItemCode"
- 			WHERE PMX_INVT."ItemCode" = '$itemCode' AND "BatchNumber" = $BatchNumber
+ 			WHERE PMX_INVT."ItemCode" = '$itemCode' AND "BatchNumber" = '$BatchNumber'
 		)
  	 )
     group by "StorLocCode" 
