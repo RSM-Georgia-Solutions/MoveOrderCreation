@@ -70,10 +70,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="CreateMoveOrdersNoDelivery.b1f">
+      <FormCategory>UserForm</FormCategory>
+    </None>
     <None Include="CreateMoveOrders.b1f">
       <FormCategory>UserForm</FormCategory>
     </None>
     <Compile Include="DiManager.cs" />
+    <Compile Include="CreateMoveOrdersNoDelivery.b1f.cs">
+      <DependentUpon>CreateMoveOrdersNoDelivery.b1f</DependentUpon>
+    </Compile>
     <Compile Include="Form1.b1f.cs">
       <DependentUpon>CreateMoveOrders.b1f</DependentUpon>
     </Compile>
@@ -97,6 +103,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Files\Queries.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Files\QueryNoDelivery.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
