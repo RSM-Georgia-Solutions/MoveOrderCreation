@@ -9,7 +9,7 @@ using System.Reflection;
 
 namespace MoveOrdersCreation
 {
-    [FormAttribute("MoveOrdersCreation.Form1", "CreateMoveOrdersNoDelivery.b1f")]
+    [FormAttribute("MoveOrdersCreation.Form2", "CreateMoveOrdersNoDelivery.b1f")]
     sealed class CreateMoveOrdersNoDelivery : UserFormBase
     {
         public CreateMoveOrdersNoDelivery()

@@ -44,6 +44,11 @@ namespace MoveOrdersCreation
 
                 // Create s sub menu
                 oCreationPackage.Type = SAPbouiCOM.BoMenuType.mt_STRING;
+                oCreationPackage.UniqueID = "MoveOrdersCreation.Form2";
+                oCreationPackage.String = "ReturnsNoDelivery";
+                oMenus.AddEx(oCreationPackage);
+                // Create s sub menu
+                oCreationPackage.Type = SAPbouiCOM.BoMenuType.mt_STRING;
                 oCreationPackage.UniqueID = "MoveOrdersCreation.Form1";
                 oCreationPackage.String = "Returns";
                 oMenus.AddEx(oCreationPackage);
@@ -63,6 +68,11 @@ namespace MoveOrdersCreation
                 if (pVal.BeforeAction && pVal.MenuUID == "MoveOrdersCreation.Form1")
                 {
                     CreateMoveOrders activeForm = new CreateMoveOrders();
+                    activeForm.Show();
+                }
+                if (pVal.BeforeAction && pVal.MenuUID == "MoveOrdersCreation.Form2")
+                {
+                    CreateMoveOrdersNoDelivery activeForm = new CreateMoveOrdersNoDelivery();
                     activeForm.Show();
                 }
             }
