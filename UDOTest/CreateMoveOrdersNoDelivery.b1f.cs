@@ -39,7 +39,9 @@ namespace MoveOrdersCreation
         private void OnCustomInitialize()
         {
             string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\QueryNoDelivery.sql");
+            string path2 = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Files\MinQuantity.sql");
             _query = File.ReadAllText(path);
+            _queryMin = File.ReadAllText(path2);
             Refresh();
         }
 
@@ -53,21 +55,33 @@ namespace MoveOrdersCreation
 
 
         private  string _query ;
+        private  string _queryMin;
         private SAPbouiCOM.Button Button1;
 
         private void Button1_PressedAfter(object sboObject, SAPbouiCOM.SBOItemEventArg pVal)
         {
             Recordset recSetGetReturns = (Recordset)DiManager.Company.GetBusinessObject(BoObjectTypes.BoRecordset);   
+            Recordset recSet2 = (Recordset)DiManager.Company.GetBusinessObject(BoObjectTypes.BoRecordset);
             List<MoveOrder> moveOrders = new List<MoveOrder>();
             List<MoveOrderRow> moveOrderRows = new List<MoveOrderRow>();
 
             recSetGetReturns.DoQuery(DiManager.QueryHanaTransalte(_query));
 
             while (!recSetGetReturns.EoF)
-            {                
+            {
                 var itemCode = recSetGetReturns.Fields.Item("ItemCode").Value.ToString();
+                var batch = int.Parse(recSetGetReturns.Fields.Item("U_PMX_BATC").Value.ToString());
+                _queryMin = _queryMin.Replace("$itemCode", $"{itemCode}");
+                _queryMin = _queryMin.Replace("$BatchNumber", $"{batch}");
+                recSet2.DoQuery(_queryMin);
+                var destiantionLocation = recSet2.Fields.Item("StorLocCode").Value.ToString();
+                var SSCC = recSet2.Fields.Item("SSCC").Value.ToString();
+                recSet2.DoQuery($"select \"InternalKey\" from PMX_LUID where \"SSCC\" = '{SSCC}'");
+                var destLogUnitIdentKey = int.Parse(recSet2.Fields.Item("InternalKey").Value.ToString());
+                recSet2.DoQuery($"select \"InternalKey\" from PMX_ITRI where \"BatchNumber\" = '{batch}'");
+                var batchId = int.Parse(recSet2.Fields.Item("InternalKey").Value.ToString());
                 //var binTo = recSetGetReturns.Fields.Item("StorLocCode").Value.ToString();                               
-               // int destLogUnitIdentKey = int.Parse(recSetGetReturns.Fields.Item("LogUnitIdentKey").Value.ToString());
+                // int destLogUnitIdentKey = int.Parse(recSetGetReturns.Fields.Item("LogUnitIdentKey").Value.ToString());
                 var docFrom = recSetGetReturns.Fields.Item("U_PMX_LOCO").Value.ToString();
                 var wareHouse = recSetGetReturns.Fields.Item("PMX WhsCode").Value.ToString();
                 var lineNum = int.Parse(recSetGetReturns.Fields.Item("LineNum").Value.ToString());
@@ -100,9 +114,9 @@ namespace MoveOrdersCreation
                     QuantityPerUom = quantityPerUom,
                     SrcStorLocCode = srcStorLocCode,
                     SrcLogUnitIdentKey = srcLogUnitIdentKey,
-                   // DestStorLocCode = destStorLocCode,
-                    //DestLogUnitIdentKey = destLogUnitIdentKey,
-                   // ItemTransactionalInfoKey = itemTransactionalInfoKey,
+                    DestStorLocCode = destiantionLocation,
+                    DestLogUnitIdentKey = destLogUnitIdentKey,
+                    ItemTransactionalInfoKey = batchId,
                     StockLevel = 'D',
                     SrcMasterLogUnitIdentKey = srcLogUnitIdentKey,
                 };

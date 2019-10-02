@@ -16,6 +16,7 @@
  RDN1."UomCode", 
  RDN1."NumPerMsr", 
  RDN1."U_PMX_QUAN",  
+ RDN1."U_PMX_BATC",  
  PMX_OSWH."Code" AS "PMX WhsCode"
  
   FROM ORDN 
