@@ -66,8 +66,8 @@ namespace MoveOrdersCreation
             while (!recSetGetReturns.EoF)
             {                
                 var itemCode = recSetGetReturns.Fields.Item("ItemCode").Value.ToString();
-                var binTo = recSetGetReturns.Fields.Item("StorLocCode").Value.ToString();                               
-                int destLogUnitIdentKey = int.Parse(recSetGetReturns.Fields.Item("LogUnitIdentKey").Value.ToString());
+                //var binTo = recSetGetReturns.Fields.Item("StorLocCode").Value.ToString();                               
+               // int destLogUnitIdentKey = int.Parse(recSetGetReturns.Fields.Item("LogUnitIdentKey").Value.ToString());
                 var docFrom = recSetGetReturns.Fields.Item("U_PMX_LOCO").Value.ToString();
                 var wareHouse = recSetGetReturns.Fields.Item("PMX WhsCode").Value.ToString();
                 var lineNum = int.Parse(recSetGetReturns.Fields.Item("LineNum").Value.ToString());
@@ -78,9 +78,9 @@ namespace MoveOrdersCreation
                 var quantityPerUom = decimal.Parse(recSetGetReturns.Fields.Item("NumPerMsr").Value.ToString());
                 var srcStorLocCode = docFrom;
                 var srcLogUnitIdentKey = int.Parse(recSetGetReturns.Fields.Item("U_PMX_LUID").Value.ToString() == string.Empty ? "0" : recSetGetReturns.Fields.Item("U_PMX_LUID").Value.ToString());
-                var destStorLocCode = binTo;
-                var itemTransactionalInfoKey = int.Parse(recSetGetReturns.Fields.Item("ItemTransactionalInfoKey").Value
-                    .ToString());
+               // var destStorLocCode = binTo;
+             //   var itemTransactionalInfoKey = int.Parse(recSetGetReturns.Fields.Item("ItemTransactionalInfoKey").Value
+                //    .ToString());
                 MoveOrder moveOrder = new MoveOrder
                 {
                     ToPmxWhsCode = wareHouse,
@@ -100,9 +100,9 @@ namespace MoveOrdersCreation
                     QuantityPerUom = quantityPerUom,
                     SrcStorLocCode = srcStorLocCode,
                     SrcLogUnitIdentKey = srcLogUnitIdentKey,
-                    DestStorLocCode = destStorLocCode,
-                    DestLogUnitIdentKey = destLogUnitIdentKey,
-                    ItemTransactionalInfoKey = itemTransactionalInfoKey,
+                   // DestStorLocCode = destStorLocCode,
+                    //DestLogUnitIdentKey = destLogUnitIdentKey,
+                   // ItemTransactionalInfoKey = itemTransactionalInfoKey,
                     StockLevel = 'D',
                     SrcMasterLogUnitIdentKey = srcLogUnitIdentKey,
                 };
