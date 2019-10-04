@@ -23,5 +23,5 @@
   LEFT OUTER JOIN RDN1 ON ORDN."DocEntry" = RDN1."DocEntry"
   LEFT OUTER JOIN PMX_OSWH ON PMX_OSWH."SboWhsCode" = RDN1."WhsCode"    
   WHERE ORDN.CANCELED = 'N'   AND RDN1."BaseType" != '15'       
-  AND  ORDN."DocEntry" not in (select "BaseEntry" from PMX_MOLI where PMX_MOLI."BaseType" = 16)
-  AND TO_CHAR(RDN1.U_PMX_LOCO) = 'RB31'	
+    AND  concat( RDN1."DocEntry",RDN1."LineNum") not in (select concat("BaseEntry","LineNum") from PMX_MOLI where PMX_MOLI."BaseType" = 16)
+  AND TO_CHAR(RDN1.U_PMX_LOCO) = 'RND01'	-- ეს არის Bin

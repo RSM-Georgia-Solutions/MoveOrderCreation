@@ -24,7 +24,7 @@ namespace MoveOrdersCreation.Models
             ObjType = "PMX_MOHE";
             Priority = 200;
             DocStatus = 'O';
-            MoveOrderType = 'A';
+            MoveOrderType = 'M';
             MoveOrderStatus = 'N';
             DueDate = DateTime.Now;
             LockedBy = null;
@@ -59,14 +59,14 @@ namespace MoveOrdersCreation.Models
 
         public string Add()
         {
+            
             Recordset recSet = (Recordset)DiManager.Company.GetBusinessObject(BoObjectTypes.BoRecordset);
             Recordset recSetRow = (Recordset)DiManager.Company.GetBusinessObject(BoObjectTypes.BoRecordset);
-     
-           
+
 
             string queryHeder = $"INSERT INTO \"PMX_MOHE\" ( \"DocEntry\", \"MoveOrderStatus\", \"DueDate\", \"LockedBy\",  \"Priority\", \"MoveOrderType\", \"MoveLogUnitIn1Time\", \"FromPmxWhsCode\", \"ToPmxWhsCode\",    \"Remarks\", \"DocStatus\", \"Canceled\", \"ObjType\", \"UserSign\", \"CreatedBy\", \"Version\",    \"CreateDate\", \"CreateTime\", \"UpdateDate\", \"UpdateTime\" )   SELECT \"PMX_MOHE_S\".nextval, '{MoveOrderStatus}', '{DueDate.ToString("s")}', '{LockedBy ?? 9999999}', {Priority}, '{MoveOrderType}', '{MoveLogUnitIn1Time}', '{FromPmxWhsCode}', '{ToPmxWhsCode}', '{Remarks}', '{DocStatus}', '{Canceled}', '{ObjType}', '{UserSign}', '{CreatedBy}', '{Version}', '{CreateDate.ToString("s")}', '{CreateTime}', '{UpdateDate.ToString("s")}', '{UpdateTime}' FROM dummy";
 
-            queryHeder = queryHeder.Replace("'9999999'", "null");           
+            queryHeder = queryHeder.Replace("'9999999'", "null");
 
 
             try
@@ -84,16 +84,17 @@ namespace MoveOrdersCreation.Models
 
             int linenum = 0;
             foreach (var row in Rows)
-            {             
-                var src = row.SrcLogUnitIdentKey == 0? -99 : row.SrcLogUnitIdentKey;
-                var src1 = row.SrcMasterLogUnitIdentKey == 0? -88 : row.SrcMasterLogUnitIdentKey;
-                var src2 = row.SrcMasterLogUnitIdentKey == 0? -77 : row.SrcMasterLogUnitIdentKey;
+            {
+                var src = row.SrcLogUnitIdentKey == 0 ? -99 : row.SrcLogUnitIdentKey;
+                var src1 = row.SrcMasterLogUnitIdentKey == 0 ? -88 : row.SrcMasterLogUnitIdentKey;            
+                var src3 = row.DestLogUnitIdentKey == 0 ? -66 : row.DestLogUnitIdentKey;
 
-                string queryRow = $"INSERT INTO \"PMX_MOLI\"(\"InternalKey\", \"MoveOrderLineStatus\", \"SrcLogUnitIdentKey\", \"SrcMasterLogUnitIdentKey\", \"DestLogUnitIdentKey\", \"SrcStorLocCode\", \"QualityStatusCode\", \"DestStorLocCode\", \"OpenQty\", \"OpenQtyUom2\", \"Dscription\", \"ItemTransactionalInfoKey\", \"StockLevel\", \"WABoxCode\", \"DocEntry\", \"LineNum\", \"LineStatus\", \"BaseType\", \"BaseEntry\", \"BaseLine\", \"ItemCode\", \"Quantity\", \"Version\", \"Uom\", \"QuantityPerUom\", \"Uom2\", \"QuantityUom2\") SELECT \"PMX_MOLI_S\".nextval, '{row.MoveOrderLineStatus}', {src},{src1},{src2},'{row.SrcStorLocCode}','{row.QualityStatusCode}','{row.DestStorLocCode}',{row.OpenQty},{row.OpenQtyUom2},'{row.Dscription}',{row.ItemTransactionalInfoKey},'{row.StockLevel}','{row.WABoxCode}',{docentry},{linenum},'{row.LineStatus}','{row.BaseType}',{row.BaseEntry},{linenum},'{row.ItemCode}',{row.Quantity},{row.Version},'{row.Uom}',{row.QuantityPerUom},'{row.Uom2}',{row.QuantityUom2} FROM dummy";
+                string queryRow = $"INSERT INTO \"PMX_MOLI\"(\"InternalKey\", \"MoveOrderLineStatus\", \"SrcLogUnitIdentKey\", \"SrcMasterLogUnitIdentKey\", \"DestLogUnitIdentKey\", \"SrcStorLocCode\", \"QualityStatusCode\", \"DestStorLocCode\", \"OpenQty\", \"OpenQtyUom2\", \"Dscription\", \"ItemTransactionalInfoKey\", \"StockLevel\", \"WABoxCode\", \"DocEntry\", \"LineNum\", \"LineStatus\", \"BaseType\", \"BaseEntry\", \"BaseLine\", \"ItemCode\", \"Quantity\", \"Version\", \"Uom\", \"QuantityPerUom\", \"Uom2\", \"QuantityUom2\") SELECT \"PMX_MOLI_S\".nextval, '{row.MoveOrderLineStatus}', {src},{src1},{src3},'{row.SrcStorLocCode}','{row.QualityStatusCode}','{row.DestStorLocCode}',{row.OpenQty},{row.OpenQtyUom2},'{row.Dscription}',{row.ItemTransactionalInfoKey},'{row.StockLevel}','{row.WABoxCode}',{docentry},{linenum},'{row.LineStatus}','{row.BaseType}',{row.BaseEntry},{linenum},'{row.ItemCode}',{row.Quantity},{row.Version},'{row.Uom}',{row.QuantityPerUom},'{row.Uom2}',{row.QuantityUom2} FROM dummy";
 
                 queryRow = queryRow.Replace("-99", "NULL");
                 queryRow = queryRow.Replace("-88", "NULL");
                 queryRow = queryRow.Replace("-77", "NULL");
+                queryRow = queryRow.Replace("-66", "NULL");
 
                 try
                 {
@@ -110,7 +111,7 @@ namespace MoveOrdersCreation.Models
 
         }
 
-
+        
     }
 
 
