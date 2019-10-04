@@ -80,6 +80,7 @@ namespace MoveOrdersCreation
             while (!recSetGetReturns.EoF)
             {
                 var itemCode = recSetGetReturns.Fields.Item("ItemCode").Value.ToString();
+                var qualityStatus = recSetGetReturns.Fields.Item("U_PMX_QYSC").Value.ToString();
                 var batch = recSetGetReturns.Fields.Item("U_PMX_BATC").Value.ToString();
                 var docFrom = recSetGetReturns.Fields.Item("U_PMX_LOCO").Value.ToString();
                 var srcStorLocCode = docFrom;
@@ -154,6 +155,7 @@ namespace MoveOrdersCreation
                     DestLogUnitIdentKey = destLogUnitIdentKey,
                     ItemTransactionalInfoKey = batchId,
                     StockLevel = 'D',
+                    QualityStatusCode = qualityStatus,
                     SrcMasterLogUnitIdentKey = srcLogUnitIdentKey,
                 };
 

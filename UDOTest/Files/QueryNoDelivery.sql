@@ -16,7 +16,8 @@
  RDN1."UomCode", 
  RDN1."NumPerMsr", 
  RDN1."U_PMX_QUAN",  
- RDN1."U_PMX_BATC",  
+ RDN1."U_PMX_BATC",
+ RDN1."U_PMX_QYSC",  
  PMX_OSWH."Code" AS "PMX WhsCode"
  
   FROM ORDN 
@@ -24,4 +25,4 @@
   LEFT OUTER JOIN PMX_OSWH ON PMX_OSWH."SboWhsCode" = RDN1."WhsCode"    
   WHERE ORDN.CANCELED = 'N'   AND RDN1."BaseType" != '15'       
     AND  concat( RDN1."DocEntry",RDN1."LineNum") not in (select concat("BaseEntry","LineNum") from PMX_MOLI where PMX_MOLI."BaseType" = 16)
-  AND TO_CHAR(RDN1.U_PMX_LOCO) = 'RND01'	-- ეს არის Bin
+  AND TO_CHAR(RDN1.U_PMX_LOCO) = 'RND02'	-- ეს არის Bin
