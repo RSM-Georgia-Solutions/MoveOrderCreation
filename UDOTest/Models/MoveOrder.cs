@@ -28,7 +28,7 @@ namespace MoveOrdersCreation.Models
             MoveOrderStatus = 'N';
             DueDate = DateTime.Now;
             LockedBy = null;
-            MoveLogUnitIn1Time = 'M';
+            MoveLogUnitIn1Time = 'N';
             Remarks = null;
             Rows = new List<MoveOrderRow>();
         }
@@ -85,16 +85,26 @@ namespace MoveOrdersCreation.Models
             int linenum = 0;
             foreach (var row in Rows)
             {
-                var src = row.SrcLogUnitIdentKey == 0 ? -99 : row.SrcLogUnitIdentKey;
-                var src1 = row.SrcMasterLogUnitIdentKey == 0 ? -88 : row.SrcMasterLogUnitIdentKey;            
+                var src = row.SrcLogUnitIdentKey == 0 ? -99 : row.SrcLogUnitIdentKey;                        
                 var src3 = row.DestLogUnitIdentKey == 0 ? -66 : row.DestLogUnitIdentKey;
 
-                string queryRow = $"INSERT INTO \"PMX_MOLI\"(\"InternalKey\", \"MoveOrderLineStatus\", \"SrcLogUnitIdentKey\", \"SrcMasterLogUnitIdentKey\", \"DestLogUnitIdentKey\", \"SrcStorLocCode\", \"QualityStatusCode\", \"DestStorLocCode\", \"OpenQty\", \"OpenQtyUom2\", \"Dscription\", \"ItemTransactionalInfoKey\", \"StockLevel\", \"WABoxCode\", \"DocEntry\", \"LineNum\", \"LineStatus\", \"BaseType\", \"BaseEntry\", \"BaseLine\", \"ItemCode\", \"Quantity\", \"Version\", \"Uom\", \"QuantityPerUom\", \"Uom2\", \"QuantityUom2\") SELECT \"PMX_MOLI_S\".nextval, '{row.MoveOrderLineStatus}', {src},{src1},{src3},'{row.SrcStorLocCode}','{row.QualityStatusCode}','{row.DestStorLocCode}',{row.OpenQty},{row.OpenQtyUom2},'{row.Dscription}',{row.ItemTransactionalInfoKey},'{row.StockLevel}','{row.WABoxCode}',{docentry},{linenum},'{row.LineStatus}','{row.BaseType}',{row.BaseEntry},{linenum},'{row.ItemCode}',{row.Quantity},{row.Version},'{row.Uom}',{row.QuantityPerUom},'{row.Uom2}',{row.QuantityUom2} FROM dummy";
+                string queryRow = $"INSERT INTO \"PMX_MOLI\"(\"InternalKey\", \"MoveOrderLineStatus\", \"SrcLogUnitIdentKey\", \"SrcMasterLogUnitIdentKey\", \"DestLogUnitIdentKey\", \"SrcStorLocCode\", \"QualityStatusCode\", \"DestStorLocCode\", \"OpenQty\", \"OpenQtyUom2\", \"Dscription\", \"ItemTransactionalInfoKey\", \"StockLevel\", \"WABoxCode\", \"DocEntry\", \"LineNum\", \"LineStatus\", \"BaseType\", \"BaseEntry\", \"BaseLine\", \"ItemCode\", \"Quantity\", \"Version\", \"Uom\", \"QuantityPerUom\", \"Uom2\", \"QuantityUom2\") SELECT \"PMX_MOLI_S\".nextval, '{row.MoveOrderLineStatus}', {src},-88,{src3},'{row.SrcStorLocCode}','{row.QualityStatusCode}','{row.DestStorLocCode}',{row.OpenQty}, -33,'{row.Dscription}',{row.ItemTransactionalInfoKey},'{row.StockLevel}',-44,{docentry},{linenum},'{row.LineStatus}','{row.BaseType}',{row.BaseEntry},{linenum},'{row.ItemCode}',{row.Quantity},{row.Version},'{row.Uom}',{row.QuantityPerUom},-111, -55 FROM dummy";
+                //QuantityUom2 = null done
+                //Uom2 = null  done
+                //WABoxCode = null done
+                //Uom = სიცარიელე, არც 0 არც null (meore etapi)  not done (არ ყოფილა საჭირო)
+                //BaseType, BaseEntry, BaseLine = null (meore etapi)  not done (არ ყოფილა საჭირო)
 
                 queryRow = queryRow.Replace("-99", "NULL");
                 queryRow = queryRow.Replace("-88", "NULL");
                 queryRow = queryRow.Replace("-77", "NULL");
                 queryRow = queryRow.Replace("-66", "NULL");
+                queryRow = queryRow.Replace("-111", "NULL");
+                queryRow = queryRow.Replace("-111", "NULL");
+                queryRow = queryRow.Replace("-44", "NULL");
+                queryRow = queryRow.Replace("-55", "NULL");
+                queryRow = queryRow.Replace("-33", "NULL");
+
 
                 try
                 {
